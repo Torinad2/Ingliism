@@ -1,291 +1,88 @@
 /*
  * Ingliism
- * Меню, статьи, поиск и переключение языков.
+ * Меню, поиск, языки и загрузка статей из Cloudflare D1.
  *
  * Подключение в index.html:
  * <script src="js/main.js" defer></script>
  */
 
-/*
- * Тексты интерфейса и статьи на двух языках.
- *
- * ru — русский.
- * en — английский.
- *
- * id — постоянный идентификатор статьи.
- * У переводов одной статьи должен быть одинаковый id.
- *
- * body — содержимое статьи:
- * чётный индекс — подзаголовок,
- * нечётный индекс — абзац.
- *
- * Пока статьи находятся здесь.
- * Загрузка отдельных Markdown-файлов ещё не реализована.
- */
+/* Тексты интерфейса. Статьи находятся в базе данных. */
 const copy = {
     ru: {
-        nav: [
-            "Главная",
-            "Учение",
-            "Статьи",
-            "История",
-            "О проекте"
-        ],
-
+        nav: ["Главная", "Учение", "Статьи", "История", "О проекте"],
         eye: "Открытая библиотека",
         heading: "Пространство<br>для <em>понимания.</em>",
         intro:
             "Знакомьтесь с идеями, изучайте источники и находите ответы " +
             "на свои вопросы. В своём темпе, с вниманием к деталям.",
-
         explore: "Открыть библиотеку ↗",
         art: "Знание начинается с вопроса",
-
         library: "Исследуйте библиотеку",
         sub: "Начните с темы, которая вам близка.",
         search: "Поиск по статьям…",
         read: "Читать статью ↗",
-
         about: "О проекте",
         aboutText:
-            "Это пример информационного сайта Ingliism. Здесь можно " +
-            "постепенно собирать статьи, первоисточники и иллюстрации " +
-            "на нескольких языках. Тексты на этой странице показывают " +
-            "структуру сайта и не являются изложением вероучения.",
-
-        demo: "ДЕМОНСТРАЦИОННЫЙ КОНТЕНТ",
+            "Ingliism — открытая библиотека. Здесь можно постепенно " +
+            "собирать статьи, первоисточники и иллюстрации на нескольких " +
+            "языках. Для материалов указываются источники.",
         footer: "Библиотека знаний",
         footer2: "Русский / English · Без регистрации",
-
         back: "← К библиотеке",
         empty: "Статьи не найдены.",
         section: "Раздел библиотеки",
-
         history: "Исторические материалы",
-        historyText:
-            "Этот раздел предназначен для хронологии, документов и " +
-            "описания исторического контекста. Добавляйте даты, ссылки " +
-            "на первоисточники и пояснения к каждому материалу. " +
-            "Пока это демонстрационная страница.",
-
-        articles: [
-            {
-                id: "beginning",
-                category: "Учение",
-                title: "С чего начать изучение",
-                desc:
-                    "Путеводитель по библиотеке: основные темы, " +
-                    "понятия и порядок чтения.",
-
-                body: [
-                    "Как устроена библиотека",
-                    "Начните с обзорного материала. Он помогает увидеть " +
-                    "общую структуру темы, а затем перейти к отдельным " +
-                    "понятиям и вопросам.",
-
-                    "Читайте внимательно",
-                    "В каждой статье можно размещать определения, " +
-                    "примеры и ссылки на источники. Разделяйте цитаты " +
-                    "из документов и авторские пояснения.",
-
-                    "Продолжите исследование",
-                    "Сохраняйте вопросы, возникающие во время чтения. " +
-                    "Связанные материалы помогут рассмотреть их " +
-                    "с разных сторон."
-                ]
-            },
-            {
-                id: "sources",
-                category: "Статьи",
-                title: "Как работать с источниками",
-                desc:
-                    "На что обращать внимание при чтении документов " +
-                    "и сопоставлении текстов.",
-
-                body: [
-                    "Контекст имеет значение",
-                    "Укажите автора, название, дату и место публикации " +
-                    "документа. Эти сведения помогают читателю понять " +
-                    "происхождение текста.",
-
-                    "Цитаты и пояснения",
-                    "Оформляйте прямые цитаты отдельно и указывайте " +
-                    "источник. Если текст переведён, полезно добавить " +
-                    "сведения о переводчике и оригинале.",
-
-                    "Сопоставление материалов",
-                    "Несколько источников могут по-разному описывать " +
-                    "одно событие. Отмечайте различия и объясняйте, " +
-                    "на какие документы опирается статья."
-                ]
-            },
-            {
-                id: "history",
-                category: "История",
-                title: "История и контекст",
-                desc:
-                    "Место для хронологии, исторических документов " +
-                    "и комментариев.",
-
-                body: [
-                    "Постройте хронологию",
-                    "Здесь можно разместить проверенные даты и краткие " +
-                    "описания событий, дополнив их ссылками на документы.",
-
-                    "Добавьте контекст",
-                    "Поясните, какие обстоятельства важны для понимания " +
-                    "каждого события. Иллюстрации и карты могут " +
-                    "дополнять текст.",
-
-                    "Укажите источники",
-                    "В конце материала разместите библиографию и ссылки " +
-                    "для дальнейшего чтения. Это демонстрационный текст, " +
-                    "а не историческая справка."
-                ]
-            }
-        ]
+        loading: "Загрузка…",
+        error: "Не удалось загрузить статьи. Попробуйте ещё раз.",
+        retry: "Повторить",
+        missing: "Статья не найдена или ещё не переведена на русский язык.",
+        source: "Источник"
     },
 
     en: {
-        nav: [
-            "Home",
-            "Teachings",
-            "Articles",
-            "History",
-            "About"
-        ],
-
+        nav: ["Home", "Teachings", "Articles", "History", "About"],
         eye: "An open library",
         heading: "A space for<br><em>understanding.</em>",
         intro:
             "Explore ideas, read sources, and find answers to your " +
             "questions. At your own pace, with attention to detail.",
-
         explore: "Explore the library ↗",
         art: "Knowledge begins with a question",
-
         library: "Explore the library",
         sub: "Begin with a topic that speaks to you.",
         search: "Search articles…",
         read: "Read article ↗",
-
         about: "About the project",
         aboutText:
-            "This is a sample information website for Ingliism. " +
-            "It can hold a growing collection of articles, source " +
-            "documents, and illustrations in multiple languages. " +
-            "These sample texts demonstrate the website structure " +
-            "and do not describe religious doctrine.",
-
-        demo: "DEMONSTRATION CONTENT",
+            "Ingliism is an open library. It can hold a growing collection " +
+            "of articles, source documents, and illustrations in multiple " +
+            "languages. Sources are provided for library materials.",
         footer: "A library of knowledge",
         footer2: "Русский / English · No registration",
-
         back: "← Back to library",
         empty: "No articles found.",
         section: "Library section",
-
         history: "Historical materials",
-        historyText:
-            "This section is intended for a timeline, documents, and " +
-            "historical context. Add dates, primary sources, and notes " +
-            "for each item. This is currently a demonstration page.",
-
-        articles: [
-            {
-                id: "beginning",
-                category: "Teachings",
-                title: "Where to begin",
-                desc:
-                    "A guide to the library: key topics, concepts, " +
-                    "and a suggested reading order.",
-
-                body: [
-                    "Finding your way",
-                    "Start with an overview. It can help you understand " +
-                    "the structure of a subject before exploring " +
-                    "individual concepts and questions.",
-
-                    "Read with care",
-                    "Each article can include definitions, examples, " +
-                    "and links to sources. Keep quotations from " +
-                    "documents distinct from editorial explanations.",
-
-                    "Continue exploring",
-                    "Keep a list of questions as you read. Related " +
-                    "materials can help you consider them from " +
-                    "different perspectives."
-                ]
-            },
-            {
-                id: "sources",
-                category: "Articles",
-                title: "Reading the sources",
-                desc:
-                    "What to look for when reading documents and " +
-                    "comparing different texts.",
-
-                body: [
-                    "Context matters",
-                    "Record the author, title, date, and place of " +
-                    "publication. These details help readers understand " +
-                    "where a text comes from.",
-
-                    "Quotations and notes",
-                    "Clearly mark direct quotations and identify the " +
-                    "source. For translations, include details about " +
-                    "the translator and original text when available.",
-
-                    "Comparing materials",
-                    "Sources may describe the same event differently. " +
-                    "Note the differences and explain which documents " +
-                    "support an article."
-                ]
-            },
-            {
-                id: "history",
-                category: "History",
-                title: "History and context",
-                desc:
-                    "A place for timelines, historical documents, " +
-                    "and explanatory notes.",
-
-                body: [
-                    "Build a timeline",
-                    "Add verified dates and short descriptions of " +
-                    "events, with links to documents.",
-
-                    "Provide context",
-                    "Explain which circumstances matter for each " +
-                    "event. Illustrations and maps can complement " +
-                    "the text.",
-
-                    "List your sources",
-                    "Finish with a bibliography and further reading. " +
-                    "This is sample content, not a historical account."
-                ]
-            }
-        ]
+        loading: "Loading…",
+        error: "Could not load articles. Please try again.",
+        retry: "Retry",
+        missing: "Article not found or not yet translated into English.",
+        source: "Source"
     }
 };
 
-/*
- * Восстанавливаем выбранный язык из памяти браузера.
- * По умолчанию используем русский.
- */
-let lang = localStorage.getItem("ingliism-language") === "en"
-    ? "en"
-    : "ru";
+/* Восстанавливаем язык. Если localStorage недоступен, используем русский. */
+let lang = "ru";
 
-/*
- * Адреса разделов.
- * Их порядок соответствует подписям в nav.
- *
- * Примеры:
- * #home
- * #articles
- * #article/history
- */
+try {
+    if (localStorage.getItem("ingliism-language") === "en") {
+        lang = "en";
+    }
+} catch {
+    // Запрет сохранения данных не мешает работе сайта.
+}
+
+/* Порядок разделов соответствует подписям меню. */
 const routes = [
     "home",
     "teachings",
@@ -294,119 +91,328 @@ const routes = [
     "about"
 ];
 
+/* Экранируем данные базы перед вставкой в HTML. */
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+/* Разрешаем только обычные веб-ссылки. */
+function safeUrl(value) {
+    try {
+        const url = new URL(value);
+
+        return ["http:", "https:"].includes(url.protocol)
+            ? url.href
+            : "";
+    } catch {
+        return "";
+    }
+}
+
 /*
- * Создаём HTML карточки статьи.
+ * Ссылки Markdown:
+ * [Название](https://example.com)
  *
- * article — объект статьи.
- * index — номер карточки, начиная с нуля.
- * texts — тексты текущего языка.
- *
- * innerHTML ниже используется только с заданными в коде текстами.
- * Внешний HTML перед вставкой нужно безопасно обрабатывать.
+ * Остальной текст экранируется, поэтому HTML из базы не выполняется.
  */
-function createCard(article, index, texts) {
+function inlineMarkdown(text) {
+    const pattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    let result = "";
+    let offset = 0;
+
+    for (const match of text.matchAll(pattern)) {
+        result += escapeHtml(text.slice(offset, match.index));
+
+        const href = safeUrl(match[2]);
+
+        result += href
+            ? `<a href="${escapeHtml(href)}"
+                  rel="noopener noreferrer">${escapeHtml(match[1])}</a>`
+            : escapeHtml(match[0]);
+
+        offset = match.index + match[0].length;
+    }
+
+    return result + escapeHtml(text.slice(offset));
+}
+
+/*
+ * Простой Markdown:
+ * ## Подзаголовок
+ * Обычные абзацы
+ * - Элементы списка
+ * [Название](https://example.com)
+ *
+ * Изображения и расширенное форматирование пока не поддерживаются.
+ */
+function renderMarkdown(value) {
+    return String(value ?? "")
+        .replace(/\r\n?/g, "\n")
+        .split(/\n\s*\n/)
+        .filter(block => block.trim())
+        .map(block => {
+            const lines = block.trim().split("\n");
+
+            if (lines.every(line => /^[-*] +/.test(line))) {
+                return "<ul>" + lines.map(line => {
+                    const text = line.replace(/^[-*] +/, "");
+
+                    return `<li>${inlineMarkdown(text)}</li>`;
+                }).join("") + "</ul>";
+            }
+
+            return lines.map(line => {
+                const heading = line.match(/^(#{1,6}) +(.+)$/);
+
+                if (heading) {
+                    // H1 используется для названия самой статьи.
+                    const level = Math.max(2, heading[1].length);
+
+                    return `<h${level}>${
+                        inlineMarkdown(heading[2])
+                    }</h${level}>`;
+                }
+
+                return `<p>${inlineMarkdown(line)}</p>`;
+            }).join("");
+        })
+        .join("");
+}
+
+/* Переводим постоянные названия категорий из базы. */
+function categoryLabel(category, language) {
+    const labels = {
+        teachings: {
+            ru: "Учение",
+            en: "Teachings"
+        },
+        history: {
+            ru: "История",
+            en: "History"
+        },
+        articles: {
+            ru: "Статьи",
+            en: "Articles"
+        }
+    };
+
+    return labels[category]?.[language] || category;
+}
+
+/* Создаём карточку статьи. */
+function createCard(article, index, texts, language) {
+    const slug = escapeHtml(encodeURIComponent(article.slug));
+    const category = escapeHtml(
+        categoryLabel(article.category, language)
+    );
+
     return `
-        <a class="card" href="#article/${article.id}">
-            <span class="num">0${index + 1}</span>
+        <a class="card" href="#article/${slug}">
+            <span class="num">
+                ${String(index + 1).padStart(2, "0")}
+            </span>
 
             <div class="eyebrow" style="margin-top:14px">
-                ${article.category}
+                ${category}
             </div>
 
-            <h3>${article.title}</h3>
-            <p>${article.desc}</p>
-
+            <h3>${escapeHtml(article.title)}</h3>
+            <p>${escapeHtml(article.description)}</p>
             <span class="read">${texts.read}</span>
         </a>
     `;
 }
 
 /*
- * Отображаем текущий раздел сайта.
- * Вызывается при запуске, смене языка и переходе между разделами.
+ * При переходе отменяем предыдущий запрос.
+ * Номер renderVersion защищает от запоздавших ответов.
  */
-function render() {
-    const texts = copy[lang];
+let activeRequest;
+let renderVersion = 0;
 
-    // Убираем # из адреса. Пустой адрес означает главную страницу.
+/*
+ * Получаем список статей или одну статью.
+ *
+ * Список: /api/articles?lang=ru
+ * Статья: /api/articles?lang=ru&slug=ingliizm-introduction
+ */
+async function loadArticles(language, slug, signal) {
+    const params = new URLSearchParams({ lang: language });
+
+    if (slug !== null) {
+        params.set("slug", slug);
+    }
+
+    const response = await fetch(`/api/articles?${params}`, {
+        signal
+    });
+
+    if (response.status === 404 && slug !== null) {
+        return null;
+    }
+
+    if (!response.ok) {
+        throw new Error(`API HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (slug !== null) {
+        if (!data.article || typeof data.article.content !== "string") {
+            throw new Error("Invalid article response");
+        }
+
+        return data.article;
+    }
+
+    if (!Array.isArray(data.articles)) {
+        throw new Error("Invalid articles response");
+    }
+
+    return data.articles;
+}
+
+/* Обновляем страницу при запуске, переходе и смене языка. */
+async function render() {
+    activeRequest?.abort();
+    activeRequest = new AbortController();
+
+    const controller = activeRequest;
+    const version = ++renderVersion;
+    const language = lang;
+    const texts = copy[language];
     const route = location.hash.slice(1) || "home";
+    const main = document.querySelector("#main");
 
-    // Язык документа и название вкладки браузера.
-    document.documentElement.lang = lang;
+    document.documentElement.lang = language;
     document.title = "Ingliism · " + texts.footer;
 
-    /*
-     * Строим меню.
-     * aria-current отмечает открытый раздел.
-     */
+    /* Меню разделов. */
     document.querySelector("#nav").innerHTML = routes
         .map((item, index) => `
-            <a
-                href="#${item}"
-                ${item === route ? 'aria-current="page"' : ""}
-            >
+            <a href="#${item}"
+               ${item === route ? 'aria-current="page"' : ""}>
                 ${texts.nav[index]}
             </a>
         `)
         .join("");
 
-    /*
-     * Обновляем кнопки языков.
-     * active используется в CSS.
-     * aria-pressed сообщает состояние вспомогательным технологиям.
-     */
-    for (const language of ["ru", "en"]) {
-        const button = document.getElementById(language);
-        const selected = language === lang;
+    /* Состояние кнопок выбора языка. */
+    for (const item of ["ru", "en"]) {
+        const button = document.getElementById(item);
+        const selected = item === language;
 
         button.classList.toggle("active", selected);
         button.setAttribute("aria-pressed", selected);
     }
 
-    // Переводим подписи в подвале.
+    /* Подвал сайта. */
     document.getElementById("foot").textContent = texts.footer;
     document.getElementById("foot2").textContent = texts.footer2;
 
-    // Общий блок «О проекте».
+    /* Общий блок информации о проекте. */
     const about = `
         <section class="about">
             <div>
                 <h2>${texts.about}</h2>
-                <span class="demo">${texts.demo}</span>
             </div>
-
             <p>${texts.aboutText}</p>
         </section>
     `;
 
     let content = "";
+    let articles = [];
+    let article = null;
 
-    if (route.startsWith("article/")) {
-        /*
-         * Открываем отдельную статью.
-         * Из article/history получаем идентификатор history.
-         */
-        const articleId = route.split("/")[1];
+    const isArticle = route.startsWith("article/");
 
-        const article = texts.articles.find(
-            item => item.id === articleId
-        );
+    /* Страница «О проекте» не требует обращения к базе. */
+    if (route !== "about") {
+        main.innerHTML = `<p role="status">${texts.loading}</p>`;
 
+        // Не ждём ответа сервера бесконечно.
+        let timedOut = false;
+
+        const timeout = setTimeout(() => {
+            timedOut = true;
+            controller.abort();
+        }, 15000);
+
+        try {
+            const slug = isArticle
+                ? decodeURIComponent(route.slice(8))
+                : null;
+
+            const result = await loadArticles(
+                language,
+                slug,
+                controller.signal
+            );
+
+            if (version !== renderVersion) {
+                return;
+            }
+
+            if (isArticle) {
+                article = result;
+            } else {
+                articles = result;
+            }
+        } catch (error) {
+            if (version !== renderVersion) {
+                return;
+            }
+
+            // Отмена при переходе на другую страницу не является ошибкой.
+            if (error.name === "AbortError" && !timedOut) {
+                return;
+            }
+
+            console.error("Articles API:", error);
+
+            main.innerHTML = `
+                <p role="alert">${texts.error}</p>
+                <button type="button" id="retry-articles">
+                    ${texts.retry}
+                </button>
+            `;
+
+            document.getElementById("retry-articles").onclick = () => {
+                render();
+            };
+
+            return;
+        } finally {
+            clearTimeout(timeout);
+        }
+    }
+
+    if (isArticle) {
+        /* Полный текст отдельной статьи. */
         if (article) {
-            /*
-             * Чередуем подзаголовки и абзацы.
-             * Индексы 0, 2, 4 — подзаголовки.
-             * Индексы 1, 3, 5 — абзацы.
-             */
-            const articleBody = article.body
-                .map((text, index) => {
-                    if (index % 2 === 0) {
-                        return `<h2>${text}</h2>`;
-                    }
+            document.title = article.title + " · Ingliism";
 
-                    return `<p>${text}</p>`;
-                })
-                .join("");
+            const source = safeUrl(article.source_url);
+            const category = escapeHtml(
+                categoryLabel(article.category, language)
+            );
+
+            const sourceLink = source
+                ? `
+                    <p>
+                        <a href="${escapeHtml(source)}"
+                           rel="noopener noreferrer">
+                            ${texts.source}
+                        </a>
+                    </p>
+                `
+                : "";
 
             content = `
                 <article class="article">
@@ -414,51 +420,43 @@ function render() {
                         ${texts.back}
                     </a>
 
-                    <p class="eyebrow">
-                        ${article.category} · ${texts.demo}
+                    <p class="eyebrow">${category}</p>
+                    <h1>${escapeHtml(article.title)}</h1>
+                    <p class="intro">
+                        ${escapeHtml(article.description)}
                     </p>
 
-                    <h1>${article.title}</h1>
-                    <p class="intro">${article.desc}</p>
-
-                    ${articleBody}
+                    ${renderMarkdown(article.content)}
+                    ${sourceLink}
+                </article>
+            `;
+        } else {
+            content = `
+                <article class="article">
+                    <a class="back" href="#articles">
+                        ${texts.back}
+                    </a>
+                    <p>${texts.missing}</p>
                 </article>
             `;
         }
     } else if (route === "about") {
-        // Отдельная страница «О проекте».
         content = `
             <div style="padding-top:40px">
                 ${about}
             </div>
         `;
-    } else if (route === "timeline") {
-        // Вводная страница раздела «История».
-        content = `
-            <article class="article">
-                <p class="eyebrow">${texts.section}</p>
-
-                <h1>${texts.history}</h1>
-                <p>${texts.historyText}</p>
-
-                <a class="primary" href="#article/history">
-                    ${texts.read}
-                </a>
-            </article>
-        `;
     } else {
+        /* Главная страница: вводный блок и CSS-пейзаж. */
         if (route === "home") {
-            // Описание CSS-пейзажа для экранных дикторов.
-            const artDescription = lang === "ru"
+            const artDescription = language === "ru"
                 ? "Стилизованный пейзаж с солнцем и холмами"
                 : "Stylized landscape with sun and hills";
 
-            // Вводный блок показываем только на главной странице.
             content = `
                 <section class="hero">
                     <div>
                         <div class="eyebrow">${texts.eye}</div>
-
                         <h1>${texts.heading}</h1>
                         <p class="intro">${texts.intro}</p>
 
@@ -467,43 +465,47 @@ function render() {
                         </a>
                     </div>
 
-                    <div
-                        class="art"
-                        role="img"
-                        aria-label="${artDescription}"
-                    >
+                    <div class="art"
+                         role="img"
+                         aria-label="${artDescription}">
                         <div class="sun"></div>
                         <div class="hill second"></div>
                         <div class="hill"></div>
                         <div class="hill third"></div>
-
                         <div class="art-label">${texts.art}</div>
                     </div>
                 </section>
             `;
         }
 
-        /*
-         * В разделе «Учение» показываем первую статью.
-         * На главной и в разделе «Статьи» показываем все статьи.
-         */
-        const articles = texts.articles.filter((article, index) => {
-            return route !== "teachings" || index === 0;
+        /* Фильтруем статьи по категории, записанной в базе. */
+        const filteredArticles = articles.filter(item => {
+            if (route === "teachings") {
+                return item.category === "teachings";
+            }
+
+            if (route === "timeline") {
+                return item.category === "history";
+            }
+
+            return true;
         });
 
-        const cards = articles
-            .map((article, index) => {
-                return createCard(article, index, texts);
+        const cards = filteredArticles
+            .map((item, index) => {
+                return createCard(item, index, texts, language);
             })
             .join("");
 
         const sectionTitle = route === "teachings"
             ? texts.nav[1]
-            : texts.library;
+            : route === "timeline"
+                ? texts.history
+                : texts.library;
 
-        const sectionStyle = route !== "home"
-            ? "margin-top:55px"
-            : "";
+        const sectionStyle = route === "home"
+            ? ""
+            : "margin-top:55px";
 
         content += `
             <section style="${sectionStyle}">
@@ -514,86 +516,79 @@ function render() {
                         <div class="small">${texts.sub}</div>
                     </div>
 
-                    <input
-                        class="search"
-                        type="search"
-                        aria-label="${texts.search}"
-                        placeholder="${texts.search}"
-                    >
+                    <input class="search"
+                           type="search"
+                           aria-label="${texts.search}"
+                           placeholder="${texts.search}">
                 </div>
 
                 <div class="grid" id="cards">
                     ${cards}
                 </div>
 
-                <p class="empty" hidden>${texts.empty}</p>
+                <p class="empty"
+                   ${filteredArticles.length ? "hidden" : ""}>
+                    ${texts.empty}
+                </p>
             </section>
 
             ${about}
         `;
     }
 
-    /*
-     * Заменяем содержимое основного контейнера.
-     * Если статья не найдена, выводим сообщение.
-     */
-    document.querySelector("#main").innerHTML =
-        content || `<p>${texts.empty}</p>`;
+    /* Не показываем результат устаревшего запроса. */
+    if (version !== renderVersion) {
+        return;
+    }
 
-    /*
-     * Назначаем поиск после создания нового HTML.
-     * Поиск проверяет текст карточек, а не полное содержимое статей.
-     */
+    main.innerHTML = content || `<p>${texts.empty}</p>`;
+
+    /* Поиск по заголовкам, описаниям и категориям карточек. */
     const search = document.querySelector(".search");
 
     if (search) {
         search.addEventListener("input", () => {
-            const query = search.value.toLowerCase();
+            const query = search.value.trim().toLowerCase();
             let visibleCount = 0;
 
             document.querySelectorAll(".card").forEach(card => {
-                const text = card.textContent.toLowerCase();
-                const matches = text.includes(query);
+                const matches = card.textContent
+                    .toLowerCase()
+                    .includes(query);
 
-                // Атрибут hidden скрывает неподходящие карточки.
                 card.hidden = !matches;
+                card.style.display = matches ? "" : "none";
 
                 if (matches) {
                     visibleCount++;
                 }
             });
 
-            // Показываем сообщение, если совпадений нет.
-            document.querySelector(".empty").hidden =
-                visibleCount > 0;
+            document.querySelector(".empty").hidden = visibleCount > 0;
         });
     }
 }
 
-/*
- * Переключение языка.
- * Сохраняем выбор в браузере и обновляем содержимое страницы.
- */
+/* Выбор языка и сохранение настройки в браузере. */
 for (const language of ["ru", "en"]) {
     document.getElementById(language).onclick = () => {
         lang = language;
 
-        localStorage.setItem("ingliism-language", language);
+        try {
+            localStorage.setItem("ingliism-language", language);
+        } catch {
+            // Переключение работает даже без localStorage.
+        }
 
         render();
     };
 }
 
-/*
- * Реагируем на изменение части адреса после #.
- * Работает также с кнопками браузера «Назад» и «Вперёд».
- */
+/* Переходы по меню и кнопки браузера «Назад» / «Вперёд». */
 addEventListener("hashchange", () => {
     render();
-
-    // Новый раздел показываем с начала страницы.
     scrollTo(0, 0);
 });
 
-// Первый показ страницы.
+/* Первый показ страницы. */
 render();
